@@ -1,0 +1,18 @@
+# Os blocos vão só na release do GitHub, nunca no git.
+dist/
+cache/
+.cache/
+node_modules/
+__pycache__/
+*.pyc
+*.onnx
+*.wasm
+*.woff2
+*.mjs
+*.pth
+*.safetensors
+*.tgz
+*.parcial
+duckdb-blocking-bundle.js
+sql-wasm-browser.js
+.DS_Store

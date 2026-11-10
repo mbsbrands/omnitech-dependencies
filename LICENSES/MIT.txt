@@ -1,0 +1,50 @@
+Licença MIT (texto padrão abaixo)
+
+Vale para os blocos listados, cada um com o aviso de copyright do projeto de origem,
+como está no LICENSE do projeto (ou do pacote npm, quando ele traz o arquivo):
+
+- ort-js, ort-wasm (onnxruntime-web 1.30.0; LICENSE do repositório microsoft/onnxruntime):
+  Copyright (c) Microsoft Corporation
+- modelo-fundo (pesos do BiRefNet_lite e código do BiRefNet; LICENSE do repositório ZhengPeng7/BiRefNet):
+  Copyright (c) 2024 ZhengPeng
+- modelo-apagar (MI-GAN; LICENSE do repositório Picsart-AI-Research/MI-GAN):
+  Copyright (c) 2024 Picsart AI Research (PAIR)
+- sqljs-js, sqljs-wasm (sql.js 1.14.2; LICENSE do pacote npm, com a lista de autores no AUTHORS do pacote):
+  Copyright (c) 2017 sql.js authors (see AUTHORS)
+- duckdb-js, duckdb-wasm (DuckDB-Wasm 1.32.0; LICENSE do repositório duckdb/duckdb-wasm na tag v1.32.0,
+  porque o pacote npm não traz o arquivo):
+  Copyright 2018-2025 Stichting DuckDB Foundation
+- duckdb-js (js-sha256 0.11.1, embutido no DuckDB-Wasm; aviso que fica no fim do próprio bloco):
+  Copyright Chen, Yi-Cyuan 2014-2025
+
+Notas:
+- avisos de terceiros que vêm dentro dos binários:
+  - ort-js e ort-wasm: LICENSES/terceiros-onnxruntime.txt (ThirdPartyNotices.txt do onnxruntime v1.30.0);
+  - duckdb-wasm e duckdb-js: LICENSES/terceiros-duckdb-wasm.txt (licenças de terceiros do DuckDB,
+    do Apache Arrow C++ e do RapidJSON);
+  - duckdb-js também: LICENSES/Apache-2.0.txt e LICENSES/0BSD.txt.
+- o SQLite dentro do sqljs-wasm é de domínio público.
+
+----------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) <o titular de cada bloco, na lista acima>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

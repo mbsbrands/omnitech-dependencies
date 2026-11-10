@@ -1,0 +1,260 @@
+{
+  "versao": "1.0.0",
+  "url_base": "https://github.com/mbsbrands/omnitech-dependencies/releases/download/v1.0.0/",
+  "blocos": [
+    {
+      "nome": "ort-js",
+      "arquivo": "ort.webgpu.bundle.min.mjs",
+      "versao": "1.30.0",
+      "origem": "npm onnxruntime-web@1.30.0 (dist/ort.webgpu.bundle.min.mjs)",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "0730816731ce2cdfb06f273da065d4a1c7091eb9d1756a83b2916c8a89d015e2",
+      "bytes": 117732,
+      "bytes_gzip": 39144,
+      "comando": "npm pack onnxruntime-web@1.30.0; cópia sem alteração de package/dist/ort.webgpu.bundle.min.mjs",
+      "entrada": {},
+      "saida": {},
+      "nota": "ESM com a cola do Emscripten embutida; importar de um Blob dentro de um Worker clássico (Worker module de blob: falha por file://) com env.wasm.wasmBinary, numThreads=1, proxy=false. Expõe o namespace do ort como módulo, não como global. Avisos de terceiros em LICENSES/terceiros-onnxruntime.txt.",
+      "usado_por": [
+        "imagem"
+      ]
+    },
+    {
+      "nome": "ort-wasm",
+      "arquivo": "ort-wasm-simd-threaded.asyncify.wasm",
+      "versao": "1.30.0",
+      "origem": "npm onnxruntime-web@1.30.0 (dist/ort-wasm-simd-threaded.asyncify.wasm)",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "39f9f0894d478800487ed9f7dbe92618498db320cf55c8e3d89adff8dce658da",
+      "bytes": 26781914,
+      "bytes_gzip": 6576779,
+      "comando": "npm pack onnxruntime-web@1.30.0; cópia sem alteração de package/dist/ort-wasm-simd-threaded.asyncify.wasm",
+      "entrada": {},
+      "saida": {},
+      "nota": "WASM com WebGPU (EP WebGPU nativo, build asyncify) que casa com o ort-js; passar os bytes em ort.env.wasm.wasmBinary. Avisos de terceiros em LICENSES/terceiros-onnxruntime.txt.",
+      "usado_por": [
+        "imagem"
+      ]
+    },
+    {
+      "nome": "modelo-fundo",
+      "arquivo": "birefnet_lite_768.onnx",
+      "versao": "BiRefNet_lite (commit aa62cd87eafb9cc43056d08ef3615a14628b831d), 768 px, ONNX opset 17, pesos int8 por canal e conta em float",
+      "origem": "https://huggingface.co/ZhengPeng7/BiRefNet_lite/resolve/aa62cd87eafb9cc43056d08ef3615a14628b831d/model.safetensors (pesos MIT, sha256 4417d89795250e698c3cb0ae8df15743810065f646f48a694fdfa7ca052d0815), com o código de https://huggingface.co/ZhengPeng7/BiRefNet (commit e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4, cópia local em models/BiRefNet/ do editor-imagens com sha256 fixado; birefnet.py: índice do backbone '][6]' -> '][3]' (swin_v1_l -> swin_v1_t, a versão lite)), convertido para ONNX por nós",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "e84fc0ea8363cd09859149cd9af9117dce3f8d8e21cff2bc7502d1d23c3ea2a9",
+      "bytes": 65713142,
+      "bytes_gzip": 40736427,
+      "comando": "python ferramentas/conversores/converter_birefnet_lite.py (com o .venv do editor-imagens): pesos model.safetensors (sha256 4417d89795250e698c3cb0ae8df15743810065f646f48a694fdfa7ca052d0815) com a cópia local do código de ZhengPeng7/BiRefNet (commit e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4; birefnet.py sha256 208771ae626f653d64128fbf2d6ac9f8e645c5cc5e286258a73ec3322bbfe5ef, conferido antes da cópia) e uma linha mudada (birefnet.py: índice do backbone '][6]' -> '][3]' (swin_v1_l -> swin_v1_t, a versão lite)); convolução deformável por grid_sample + conv 1x1 (ferramentas/conversores/deform_amostragem.py); torch.onnx.export opset 17, entrada fixa [1,3,768,768], saída com sigmoide; ORT_ENABLE_BASIC; Concat em árvore de até 6 entradas; pesos de Conv/MatMul/Gemm em int8 por canal (DequantizeLinear), conta em float",
+      "entrada": {
+        "altura": 768,
+        "largura": 768,
+        "layout": "NCHW",
+        "tipo": "float32",
+        "media": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "desvio": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "descricao": "'input_image' [1,3,768,768] RGB. Redimensionar a foto para 768x768 com interpolação bilinear (sem manter proporção), dividir por 255 e aplicar (x - media) / desvio por canal."
+      },
+      "saida": {
+        "forma": "'output_image' [1,1,768,768] float32",
+        "significado": "Probabilidade de primeiro plano em 0..1 (já passou pela sigmoide). Ampliar para o tamanho da foto (bilinear) e usar como alfa."
+      },
+      "nota": "Tirar fundo. Modelo convertido por nós a partir dos pesos MIT do BiRefNet_lite; código do BiRefNet sob MIT. Conferido no case: borda média >= 0,91 contra o BiRefNet completo a 1024 px nas 6 fotos de medição.",
+      "usado_por": [
+        "imagem"
+      ],
+      "codigo": {
+        "repositorio": "https://huggingface.co/ZhengPeng7/BiRefNet",
+        "commit": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+        "copia_local": "models/BiRefNet/ do repositório editor-imagens (fora do git; baixada por editor/download_models.py)",
+        "sha256": {
+          "birefnet.py": "208771ae626f653d64128fbf2d6ac9f8e645c5cc5e286258a73ec3322bbfe5ef",
+          "BiRefNet_config.py": "e7b8c2a74f6cea6a59553d517f71d47f2c1d90e670a13416af17c25fe2f3dc52",
+          "config.json": "c97ea21569daf66b205491a4635147dd3bc42c7c168b89d7d75b53f67ef548ae"
+        },
+        "mudanca": "birefnet.py: índice do backbone '][6]' -> '][3]' (swin_v1_l -> swin_v1_t, a versão lite)"
+      }
+    },
+    {
+      "nome": "modelo-apagar",
+      "arquivo": "migan_pipeline_v2.onnx",
+      "versao": "MI-GAN pipeline v2 (commit 406830d0fa60666da0071c342ad2fbc8f30c5c64)",
+      "origem": "https://huggingface.co/andraniksargsyan/migan/resolve/406830d0fa60666da0071c342ad2fbc8f30c5c64/migan_pipeline_v2.onnx",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "6f1f3530a1a2324b19752018ce756088b07973cda8d7d890034ace5c8a48c40b",
+      "bytes": 28079181,
+      "bytes_gzip": 24540706,
+      "comando": "download direto, sem conversão",
+      "entrada": {
+        "altura": "dinamico",
+        "largura": "dinamico",
+        "layout": "NCHW",
+        "tipo": "uint8",
+        "media": null,
+        "desvio": null,
+        "descricao": "Duas entradas uint8, lote 1: 'image' [1,3,H,W] RGB 0..255 e 'mask' [1,1,H,W] com o mesmo H e W. Máscara: 255 = manter, 0 = apagar. Qualquer valor abaixo de 255 é tratado como (parte do) buraco, então binarizar para exatamente 0 ou 255. O próprio modelo recorta a região do buraco, redimensiona e cola de volta; aceita a foto inteira no tamanho original."
+      },
+      "saida": {
+        "forma": "'result' [1,3,H,W] uint8",
+        "significado": "Foto RGB 0..255 com o buraco preenchido; fora do buraco os pixels voltam iguais à entrada (só um anel de 1 px em volta do buraco pode mudar)."
+      },
+      "nota": "Apagar com pincel (MI-GAN, Picsart AI Research). Arquivo baixado sem nenhuma mudança.",
+      "usado_por": [
+        "imagem"
+      ]
+    },
+    {
+      "nome": "modelo-melhorar",
+      "arquivo": "realesr-general-x4v3.onnx",
+      "versao": "Real-ESRGAN v0.2.5.0, realesr-general-x4v3 (SRVGGNetCompact), ONNX opset 17 fp32",
+      "origem": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth (sha256 8dc7edb9ac80ccdc30c3a5dca6616509367f05fbc184ad95b731f05bece96292), exportado para ONNX",
+      "licenca": "BSD-3-Clause",
+      "arquivo_licenca": "LICENSES/BSD-3-Clause.txt",
+      "sha256": "19ddb5fbc6ef878d7d5ebb1e353af3027b69ac3e6f75d004afecb0c0b1387147",
+      "bytes": 4866418,
+      "bytes_gzip": 4536254,
+      "comando": "spandrel.ModelLoader().load_from_file('realesr-general-x4v3.pth').model; torch.onnx.export(m, x[1,3,64,64], opset_version=17, dynamo=False, input_names=['input'], output_names=['output'], dynamic_axes={input:{2:'altura',3:'largura'}, output:{2:'altura4',3:'largura4'}}) (torch 2.15.0, spandrel 0.4.2; ver ferramentas/conversores/exportar_esrgan.py, vindo de preparar_blocos.py do editor-imagens)",
+      "entrada": {
+        "altura": "dinamico",
+        "largura": "dinamico",
+        "layout": "NCHW",
+        "tipo": "float32",
+        "media": null,
+        "desvio": null,
+        "descricao": "'input' [1,3,H,W] RGB float32 em 0..1 (pixel/255), sem média nem desvio. H e W livres (processar em blocos, ex.: 384 px com 16 px de sobra)."
+      },
+      "saida": {
+        "forma": "'output' [1,3,4H,4W] float32",
+        "significado": "Foto RGB ampliada 4x em 0..1; pode passar um pouco de 0 e 1, então limitar (clamp) antes de multiplicar por 255."
+      },
+      "nota": "Melhorar (ampliar 4x). Exportado por nós dos pesos oficiais do Real-ESRGAN v0.2.5.0; conferido contra o PyTorch (diferença máxima abaixo de 1e-3).",
+      "usado_por": [
+        "imagem"
+      ]
+    },
+    {
+      "nome": "sqljs-js",
+      "arquivo": "sql-wasm-browser.js",
+      "versao": "SQL.js 1.14.2 (SQLite 3.49.1)",
+      "origem": "npm sql.js@1.14.2 (https://registry.npmjs.org/sql.js/-/sql.js-1.14.2.tgz, package/dist/sql-wasm-browser.js)",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "35e39a73b2e0bc1c2202a4cadb23bcf7a3a77071a39c270f014402968785b95f",
+      "bytes": 45129,
+      "bytes_gzip": 16254,
+      "comando": "download de https://registry.npmjs.org/sql.js/-/sql.js-1.14.2.tgz; cópia sem alteração de package/dist/sql-wasm-browser.js (ferramentas/montar_release.py; o mesmo arquivo e o mesmo sha256 do embutir_motor.py da omniteca-dados-html)",
+      "entrada": {},
+      "saida": {},
+      "nota": "Biblioteca do SQL.js para o navegador; expõe initSqlJs. O embutir_motor.py a envolve numa fábrica (fabricaSqlJs) e passa o wasm em bytes. O código da biblioteca contém o texto fetch( (carregamento do wasm por URL): o verificador de cada skill trata este bloco como peça de terceiros.",
+      "usado_por": [
+        "dados"
+      ]
+    },
+    {
+      "nome": "sqljs-wasm",
+      "arquivo": "sql-wasm-browser.wasm",
+      "versao": "SQL.js 1.14.2 (SQLite 3.49.1)",
+      "origem": "npm sql.js@1.14.2 (https://registry.npmjs.org/sql.js/-/sql.js-1.14.2.tgz, package/dist/sql-wasm-browser.wasm)",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "38c14f6e379210bc942bdc4ebca44e7bfdb4318ecc1c72ca666a28fdce96670a",
+      "bytes": 658410,
+      "bytes_gzip": 321797,
+      "comando": "download de https://registry.npmjs.org/sql.js/-/sql.js-1.14.2.tgz; cópia sem alteração de package/dist/sql-wasm-browser.wasm (ferramentas/montar_release.py; o mesmo arquivo e o mesmo sha256 do embutir_motor.py)",
+      "entrada": {},
+      "saida": {},
+      "nota": "SQLite 3.49.1 compilado para WebAssembly; casa com o sqljs-js. SQLite é de domínio público; o pacote sql.js é MIT.",
+      "usado_por": [
+        "dados"
+      ]
+    },
+    {
+      "nome": "duckdb-js",
+      "arquivo": "duckdb-blocking-bundle.js",
+      "versao": "DuckDB-Wasm 1.32.0 sem Worker (DuckDB 1.4.3), com Apache Arrow 17.0.0, empacotado com esbuild 0.25.0",
+      "origem": "npm @duckdb/duckdb-wasm@1.32.0 (dist/duckdb-browser-blocking.mjs) e apache-arrow@17.0.0, empacotados por nós com esbuild@0.25.0",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "4a2a65f0fd73dab71b6b3696eb5044ba1a5162f0489e50cd510414d75d8c7e90",
+      "bytes": 1364364,
+      "bytes_gzip": 321100,
+      "comando": "python3 ferramentas/embalar_duckdb.py: npm install --no-audit --no-fund --save-exact esbuild@0.25.0 apache-arrow@17.0.0 @duckdb/duckdb-wasm@1.32.0 numa pasta de rascunho; confere o sha256 de dist/duckdb-browser-blocking.mjs (ad9fce671ad42dce96a9b2410efc44d6d8fc54f34f44450fe4ffbd9094759bbb) e de dist/duckdb-eh.wasm; esbuild entrada.mjs --bundle --format=iife --global-name=duckdbBlocking --minify --target=es2020 --legal-comments=eof (entrada.mjs reexporta createDuckDB, VoidLogger e BROWSER_RUNTIME). Mesmo processo do embutir_motor.py da omniteca-dados-html",
+      "entrada": {},
+      "saida": {},
+      "nota": "IIFE com o global duckdbBlocking (createDuckDB, VoidLogger, BROWSER_RUNTIME). Junta código de várias licenças (licencas_embutidas): DuckDB-Wasm e js-sha256 0.11.1 (MIT), Apache Arrow 17.0.0 e flatbuffers 24.12.23 (Apache-2.0, LICENSES/Apache-2.0.txt) e tslib 2.9.1 (0BSD, LICENSES/0BSD.txt). O código da biblioteca contém fetch( e XMLHttpRequest: o verificador de cada skill trata este bloco como peça de terceiros. Gerado duas vezes do zero com o mesmo sha256, igual ao do embutir_motor.py. Avisos de terceiros em LICENSES/terceiros-duckdb-wasm.txt.",
+      "usado_por": [
+        "dados"
+      ],
+      "licencas_embutidas": [
+        "Apache-2.0",
+        "0BSD"
+      ]
+    },
+    {
+      "nome": "duckdb-wasm",
+      "arquivo": "duckdb-eh.wasm",
+      "versao": "DuckDB-Wasm 1.32.0 (DuckDB 1.4.3), build eh",
+      "origem": "npm @duckdb/duckdb-wasm@1.32.0 (dist/duckdb-eh.wasm)",
+      "licenca": "MIT",
+      "arquivo_licenca": "LICENSES/MIT.txt",
+      "sha256": "4c221bfa59c11f24dbd750e70c90b9252eca6eec5633936e6a2ec766e55fd879",
+      "bytes": 34242586,
+      "bytes_gzip": 7639058,
+      "comando": "python3 ferramentas/embalar_duckdb.py: cópia sem alteração de node_modules/@duckdb/duckdb-wasm/dist/duckdb-eh.wasm (sha256 igual ao do embutir_motor.py)",
+      "entrada": {},
+      "saida": {},
+      "nota": "DuckDB 1.4.3 em WebAssembly com exceções nativas (eh); casa com o duckdb-js. Avisos de terceiros em LICENSES/terceiros-duckdb-wasm.txt.",
+      "usado_por": [
+        "dados"
+      ]
+    },
+    {
+      "nome": "fonte-poppins-regular",
+      "arquivo": "Poppins-Regular.woff2",
+      "versao": "Poppins peso 400 (Regular), woff2 com o subconjunto Latin + Latin-1",
+      "origem": "Poppins (The Poppins Project Authors, https://github.com/itfoundry/Poppins); woff2 do editor-imagens, html/fonte/fontes (commit 43ac76b). A origem exata do subconjunto e a versão da fonte não foram registradas no case",
+      "licenca": "OFL-1.1",
+      "arquivo_licenca": "LICENSES/OFL-1.1.txt",
+      "sha256": "b0653084f9cb32182937a1419b2666839234a54fb0604632b160aa3002153bde",
+      "bytes": 8068,
+      "bytes_gzip": 8091,
+      "comando": "cópia sem alteração de html/fonte/fontes/Poppins-Regular.woff2 do editor-imagens (sha256 calculado na cópia: a fonte não está no manifesto do case)",
+      "entrada": {},
+      "saida": {},
+      "nota": "Fonte da identidade da Omniteca. Embutir como @font-face em data: woff2, com o nome do arquivo como família (o peso vem da família).",
+      "usado_por": [
+        "imagem"
+      ]
+    },
+    {
+      "nome": "fonte-poppins-semibold",
+      "arquivo": "Poppins-SemiBold.woff2",
+      "versao": "Poppins peso 600 (SemiBold), woff2 com o subconjunto Latin + Latin-1",
+      "origem": "Poppins (The Poppins Project Authors, https://github.com/itfoundry/Poppins); woff2 do editor-imagens, html/fonte/fontes (commit 43ac76b). A origem exata do subconjunto e a versão da fonte não foram registradas no case",
+      "licenca": "OFL-1.1",
+      "arquivo_licenca": "LICENSES/OFL-1.1.txt",
+      "sha256": "9ad5979a1f2cd7f90e04a16e35ec05a919b70867b60fa9907f45586bb69f589c",
+      "bytes": 8156,
+      "bytes_gzip": 8179,
+      "comando": "cópia sem alteração de html/fonte/fontes/Poppins-SemiBold.woff2 do editor-imagens (sha256 calculado na cópia: a fonte não está no manifesto do case)",
+      "entrada": {},
+      "saida": {},
+      "nota": "Fonte da identidade da Omniteca. Embutir como @font-face em data: woff2, com o nome do arquivo como família (o peso vem da família).",
+      "usado_por": [
+        "imagem"
+      ]
+    }
+  ]
+}
